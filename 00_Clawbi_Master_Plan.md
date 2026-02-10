@@ -361,7 +361,7 @@ Phase 3: 全员 AI Champion 示范 (Month 4+)
 **Phase 2 — 管理层扩展期**
 - [ ] 给 Regional Leads 开通 Clawbi 访问
 - [ ] 在 WBR 中引入 "Clawbi 预分析" 环节
-- [ ] 建立 #clawbie-moments 频道，分享有趣/有用的交互
+- [ ] 建立 #clawbi-moments 频道，分享有趣/有用的交互
 
 **Phase 3 — 全员推广期**
 - [ ] 出版 "How to Work with Clawbi" 内部 Playbook
@@ -477,20 +477,20 @@ Phase 3: 全员 AI Champion 示范 (Month 4+)
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| **Master Plan** | `00_Clawbi_Master_Plan.md` | 本文档 — 战略总规划 |
-| **Persona & Config** | `01_Clawbi_Persona_and_Config.md` | 灵魂文件 — 喂给 OpenClaw 的完整人设 |
-| **Week 1 Checklist** | `02_Week1_Launch_Checklist.md` | 第一周启动清单 |
-| **Account Architecture** | `03_Clawbi_Account_Architecture.md` | 独立账号体系与安全治理 |
+| **Master Plan** | `Clawbi/00_Clawbi_Master_Plan.md` | 本文档 — 战略总规划 |
+| **Persona & Config** | `Clawbi/01_Clawbi_Persona_and_Config.md` | 灵魂文件 — 喂给 OpenClaw 的完整人设 |
+| **Week 1 Checklist** | `Clawbi/02_Week1_Launch_Checklist.md` | 第一周启动清单 |
+| **Account Architecture** | `Clawbi/03_Clawbi_Account_Architecture.md` | 独立账号体系与安全治理 |
 
 ### C. 内部相关文档
 
 | 文档 | 路径 |
 |------|------|
-| AI-Native Vision | `00_HOORAY_GROUP/01_About/AI_Native_Vision.md` |
-| Cyberflo AI Strategy | `03_Cyberflo_AI/00_Overview/01_Cyberflo_AI_Vision_and_Strategy_2026.md` |
-| Skills Architecture | `03_Cyberflo_AI/01_Development_Guides/01_Skills_Architecture.md` |
-| Founder's Mind | `_CEO/_FOUNDER_MIND.md` |
-| Group Framework SoT | `00_HOORAY_GROUP/02_Strategy/Group_Framework_SoT.md` |
+| AI-Native Vision | `WORK/00_HOORAY_GROUP/01_About/AI_Native_Vision.md` |
+| Cyberflo AI Strategy | `WORK/03_Cyberflo_AI/00_Overview/01_Cyberflo_AI_Vision_and_Strategy_2026.md` |
+| Skills Architecture | `WORK/03_Cyberflo_AI/01_Development_Guides/01_Skills_Architecture.md` |
+| Founder's Mind | `WORK/_CEO/_FOUNDER_MIND.md` |
+| Group Framework SoT | `WORK/00_HOORAY_GROUP/02_Strategy/Group_Framework_SoT.md` |
 
 ### D. 术语表
 

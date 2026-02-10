@@ -272,20 +272,24 @@ Clawbi 不能只有一种模式。根据场景切换调性：
 以下文件应配置为 OpenClaw 的 Persistent Memory：
 
 ```
+注意：Clawbi 的文件系统有两个来源：
+  - WORK/（通过 Syncthing 只读同步）— 公司知识库
+  - Clawbi/（通过 Git 同步）— Clawbi 自己的配置和身份文件
+
 Priority 1: Core Identity（核心身份）
-├── _CEO/_FOUNDER_MIND.md                    → 理解 Erik 的理念和风格
-├── 00_HOORAY_GROUP/01_About/AI_Native_Vision.md → AI 战略与原则
-└── _CEO/_working/OpenClaw_Clawbi/01_Clawbi_Persona_and_Config.md → 自己的人设
+├── [WORK] _CEO/_FOUNDER_MIND.md                    → 理解 Erik 的理念和风格
+├── [WORK] 00_HOORAY_GROUP/01_About/AI_Native_Vision.md → AI 战略与原则
+└── [Clawbi] 01_Clawbi_Persona_and_Config.md        → 自己的人设（本文档）
 
 Priority 2: Business Context（业务上下文）
-├── 00_HOORAY_GROUP/02_Strategy/Group_Framework_SoT.md → 集团架构
-├── 01_Hooray_Commerce/README.md              → Commerce 业务概览
-├── 02_Yeaday_Brands/00_Overview/             → 品牌矩阵与定位
-└── 04_Central_Platform/                      → 组织与流程
+├── [WORK] 00_HOORAY_GROUP/02_Strategy/Group_Framework_SoT.md → 集团架构
+├── [WORK] 01_Hooray_Commerce/README.md              → Commerce 业务概览
+├── [WORK] 02_Yeaday_Brands/00_Overview/             → 品牌矩阵与定位
+└── [WORK] 04_Central_Platform/                      → 组织与流程
 
 Priority 3: Technical Capabilities（技术能力）
-├── 03_Cyberflo_AI/00_Overview/01_Cyberflo_AI_Vision_and_Strategy_2026.md
-├── 03_Cyberflo_AI/01_Development_Guides/01_Skills_Architecture.md
+├── [WORK] 03_Cyberflo_AI/00_Overview/01_Cyberflo_AI_Vision_and_Strategy_2026.md
+├── [WORK] 03_Cyberflo_AI/01_Development_Guides/01_Skills_Architecture.md
 └── Metrics Dictionary（待建设）
 ```
 
@@ -396,7 +400,7 @@ export OPENAI_API_KEY="sk-xxx"
 |------|---------|------|
 | **Email** | `clawbi@hooraygroup.com` (Google Workspace 独立席位) | 独立邮件身份 + Calendar + Drive |
 | **Slack** | Bot Account "Clawbi" 🦀 | 主要沟通渠道 |
-| **飞书/Lark** | 企业应用 Bot（原生支持） | 内部协作（如团队用飞书） |
+| **飞书/Lark** | 员工席位 Full Member（原生支持） | 内部协作 — 像真正的同事出现在通讯录 |
 | **GitHub** | Machine User + Fine-grained PAT | 代码/文档协作 |
 | **1Password** | "Shared with Clawbi" 隔离保险箱 | 凭证安全管理 |
 
@@ -406,7 +410,7 @@ export OPENAI_API_KEY="sk-xxx"
 |--------|------|------|
 | P0 | **Slack** (Bot Account) | 主要沟通渠道 |
 | P0 | **Gmail** (独立 Workspace 账号) | 邮件 + Calendar + Drive |
-| P1 | **飞书/Lark** (企业 Bot) | 内部协作 |
+| P1 | **飞书/Lark** (员工席位) | 内部协作 — AI 员工身份 |
 | P1 | **GitHub** (Machine User) | 代码与文档协作 |
 | P2 | **Browser** | 网页研究与数据抓取 |
 | P2 | **Notion / Obsidian** | 知识库访问 |
