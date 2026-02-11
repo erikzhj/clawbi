@@ -354,9 +354,9 @@ audit:
 - [x] 飞书客户端已登录
 - [ ] 设置飞书显示名 "Clawbi 🦀 | AI Employee #001" 和头像
 - [ ] 管理员将 Clawbi 拉入相关群组、共享文档/日历
-- [ ] 在飞书开放平台创建自建应用 "Clawbi Bridge"（OpenClaw 的"遥控器"）
-- [ ] 配置 OAuth 重定向 URL + 申请用户级别权限 → 发布上线
-- [ ] 用 Clawbi 账号完成 OAuth 授权，获取 user_access_token + refresh_token
+- [x] 在飞书开放平台创建自建应用 "Clawbi Bridge"（OpenClaw 的"遥控器"）
+- [x] 配置 OAuth 重定向 URL + 申请用户级别权限 → 发布上线
+- [x] 用 Clawbi 账号完成 OAuth 授权，获取 user_access_token + refresh_token
 - [ ] 将凭证存入 1Password "Shared with Clawbi"
 - [ ] 在 OpenClaw 中配置飞书集成
 - [ ] 测试：Clawbi 以员工身份发消息、读文档、在群组发言
