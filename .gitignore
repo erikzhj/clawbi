@@ -1,0 +1,7 @@
+# Secrets - NEVER commit
+.env
+.env.*
+*.secret
+
+# 1Password exports
+*.1pux
