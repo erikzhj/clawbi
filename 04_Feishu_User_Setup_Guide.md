@@ -173,28 +173,34 @@
 - 操作记录归属 Clawbi 个人，审计清晰
 - 与"AI 员工"定位完全一致
 
-### 3.2 环境变量配置
+### 3.2 实际配置步骤（已验证）
 
-在 OpenClaw 的环境配置中添加飞书相关变量：
+**Step 1 — 设置环境变量**：
 
 ```bash
-# 飞书/Lark 配置
-export FEISHU_APP_ID="cli_xxxxxxxxxxxxx"
-export FEISHU_APP_SECRET="xxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# User Access Token（已获取）— Clawbi 以员工身份操作的核心凭证
-export FEISHU_USER_ACCESS_TOKEN="u-xxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# 如果有 Refresh Token（用于自动续期，强烈建议配置）
-export FEISHU_USER_REFRESH_TOKEN="ur-xxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# 选择域名（二选一）
-export FEISHU_DOMAIN="https://open.feishu.cn"     # 国内飞书
-# export FEISHU_DOMAIN="https://open.larksuite.com"  # 国际 Lark
-
-# WebSocket 模式（推荐）
-export FEISHU_USE_WEBSOCKET=true
+export FEISHU_APP_ID=cli_xxxxxxxxxxxxx
+export FEISHU_APP_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+**Step 2 — 添加飞书通道**（使用 `--use-env` 从环境变量读取凭证）：
+
+```bash
+openclaw channels add --channel feishu --use-env
+```
+
+**Step 3 — 验证状态**：
+
+```bash
+openclaw channels status
+```
+
+成功输出示例：
+```
+- Feishu main: enabled, configured, running
+```
+
+> **注意**：`--use-env` 会将凭证写入 OpenClaw 的内部配置（`~/.openclaw/`），
+> 后续启动不需要再 export 环境变量。
 
 ### 3.3 User Access Token 续期
 
