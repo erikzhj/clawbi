@@ -157,15 +157,36 @@
 
 ## 3. OpenClaw 端 — 飞书集成配置
 
-### 3.1 环境变量配置
+### 3.1 Token 类型说明
+
+飞书有三种 Token，Clawbi 使用场景如下：
+
+| Token 类型 | 身份 | 适用场景 | Clawbi 是否需要 |
+|-----------|------|---------|----------------|
+| **app_access_token** | 应用自身 | Bot 身份发消息 | 基础需要 |
+| **tenant_access_token** | 应用代表企业 | 读通讯录、管理群组 | 基础需要 |
+| **user_access_token** | 应用代表用户 | **以 Clawbi 员工身份操作** | ✅ 已有，核心使用 |
+
+**user_access_token 的优势**：
+- 消息以 **Clawbi 员工账号** 发出（不是 Bot 标识），更像"真同事"
+- 可以访问 Clawbi 被共享的日历、文档、表格
+- 操作记录归属 Clawbi 个人，审计清晰
+- 与"AI 员工"定位完全一致
+
+### 3.2 环境变量配置
 
 在 OpenClaw 的环境配置中添加飞书相关变量：
 
 ```bash
 # 飞书/Lark 配置
-# 国内飞书用 feishu，国际 Lark 用 lark
 export FEISHU_APP_ID="cli_xxxxxxxxxxxxx"
 export FEISHU_APP_SECRET="xxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# User Access Token（已获取）— Clawbi 以员工身份操作的核心凭证
+export FEISHU_USER_ACCESS_TOKEN="u-xxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# 如果有 Refresh Token（用于自动续期，强烈建议配置）
+export FEISHU_USER_REFRESH_TOKEN="ur-xxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 # 选择域名（二选一）
 export FEISHU_DOMAIN="https://open.feishu.cn"     # 国内飞书
@@ -175,7 +196,38 @@ export FEISHU_DOMAIN="https://open.feishu.cn"     # 国内飞书
 export FEISHU_USE_WEBSOCKET=true
 ```
 
-### 3.2 OpenClaw 飞书通道配置
+### 3.3 User Access Token 续期
+
+> **重要**：user_access_token 有效期通常为 **2 小时**，需要用 refresh_token 续期。
+> refresh_token 有效期为 **30 天**。
+
+**自动续期方案**：
+
+```bash
+# 续期 API（OpenClaw 通常自动处理，手动续期参考如下）
+curl -X POST "https://open.feishu.cn/open-apis/authen/v1/oidc/refresh_access_token" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <app_access_token>" \
+  -d '{
+    "grant_type": "refresh_token",
+    "refresh_token": "<your_refresh_token>"
+  }'
+```
+
+返回值包含新的 `access_token` 和 `refresh_token`，需要更新环境变量。
+
+**建议**：在 OpenClaw 配置中启用自动 Token 刷新，避免手动操作：
+
+```yaml
+channels:
+  feishu:
+    auth:
+      type: user_access_token
+      auto_refresh: true           # 自动续期
+      refresh_token: "${FEISHU_USER_REFRESH_TOKEN}"
+```
+
+### 3.4 OpenClaw 飞书通道配置
 
 在 OpenClaw 的配置文件中启用飞书通道：
 
@@ -188,8 +240,13 @@ channels:
     app_secret: "${FEISHU_APP_SECRET}"
     domain: "${FEISHU_DOMAIN}"
     transport: websocket          # 推荐 WebSocket
-    # transport: webhook          # 或 Webhook 模式
-    # webhook_url: "https://your-domain.com/feishu/webhook"
+
+    # 身份模式：使用 user_access_token，消息以 Clawbi 员工身份发出
+    auth:
+      type: user_access_token
+      user_access_token: "${FEISHU_USER_ACCESS_TOKEN}"
+      auto_refresh: true
+      refresh_token: "${FEISHU_USER_REFRESH_TOKEN}"
 
     # 消息处理
     reply_in_thread: true         # 在话题中回复（保持对话整洁）
@@ -205,6 +262,11 @@ channels:
     ignore:
       - bot_message               # 忽略其他 Bot 消息
 ```
+
+> **user_access_token vs app_access_token 的区别**：
+> - `app_access_token`：消息显示为 "Clawbi Agent [APP]"（Bot 标识）
+> - `user_access_token`：消息显示为 "Clawbi"（员工身份，无 Bot 标识）
+> - 推荐用 `user_access_token`，与"AI 员工"定位一致
 
 ### 3.3 配置用户白名单
 
