@@ -300,6 +300,8 @@ tool_permissions:
     - email_reply                     # 回邮件必须确认
     - shell_exec                      # 执行命令需确认
     - calendar_write                  # 创建日历事件需确认
+    - gateway_restart                 # 重启 Gateway 必须确认（2026-02-11 事故后新增）
+    - integration_config              # 修改集成配置必须确认（2026-02-11 事故后新增）
   blocked:
     - system_modify                   # 禁止修改系统
     - external_api_write              # 禁止调用外部写入 API
@@ -358,7 +360,7 @@ audit:
 - [x] 配置 OAuth 重定向 URL + 申请用户级别权限 → 发布上线
 - [x] 用 Clawbi 账号完成 OAuth 授权，获取 user_access_token + refresh_token
 - [ ] 将凭证存入 1Password "Shared with Clawbi"
-- [ ] 在 OpenClaw 中配置飞书集成
+- [ ] 在 OpenClaw 中配置飞书集成 ⚠️ **配置失败 (2026-02-11)**：Clawbi 自行配置并重启 Gateway 后测试不通过，Gateway 断网。需排查后重新配置。
 - [ ] 测试：Clawbi 以员工身份发消息、读文档、在群组发言
 - [ ] （可选）启用 Bot 能力用于 WebSocket 实时接收消息
 - [ ] 创建 GitHub Machine User 账号
@@ -389,9 +391,72 @@ audit:
 
 ---
 
+## 5. 故障记录
+
+### Incident 2026-02-11: 飞书 Gateway 配置失败 & 断网
+
+**事件描述**：
+Clawbi 在 OAuth 授权完成后，自行尝试配置 OpenClaw 飞书集成并重启 Gateway，导致：
+- Gateway 配置测试不通过
+- Gateway 重启后断网
+
+**根因分析**：
+配置流程中有关键前置步骤未完成就执行了 Gateway 重启：
+
+| 步骤 | 状态 | 影响 |
+|------|------|------|
+| OAuth 授权获取 token | ✅ 已完成 | — |
+| 凭证存入 1Password | ❌ 未完成 | Gateway 可能无法通过 Service Account 读取凭证 |
+| OpenClaw 飞书集成配置 | ❌ 配置不正确 | Gateway 启动后无法连接飞书 API |
+| 测试验证 | ❌ 未执行 | 未验证就重启导致直接故障 |
+
+**排查清单**（恢复网络后执行）：
+
+1. **恢复 Gateway**：
+   ```bash
+   # 检查 Gateway 状态
+   openclaw status
+   # 如果 Gateway 挂了，先不带飞书配置启动
+   openclaw restart --skip-integrations
+   ```
+
+2. **检查飞书 token 有效性**：
+   ```bash
+   # 验证 user_access_token 是否有效
+   curl -s 'https://open.feishu.cn/open-apis/authen/v1/user_info' \
+     -H 'Authorization: Bearer <user_access_token>' | jq .
+   ```
+
+3. **检查 token 是否已过期**：
+   - `user_access_token` 有效期通常只有 **2 小时**
+   - 如果过期，需用 `refresh_token` 刷新（refresh_token 有效期 30 天）
+   ```bash
+   curl -s -X POST 'https://open.feishu.cn/open-apis/authen/v1/oidc/refresh_access_token' \
+     -H 'Content-Type: application/json' \
+     -d '{
+       "grant_type": "refresh_token",
+       "refresh_token": "<refresh_token>",
+       "app_id": "<app_id>",
+       "app_secret": "<app_secret>"
+     }' | jq .
+   ```
+
+4. **正确的配置顺序**（修复后重新执行）：
+   - Step A: 将 App ID、App Secret、refresh_token 存入 1Password
+   - Step B: 在 OpenClaw 管理界面配置飞书 Channel（填入凭证）
+   - Step C: 保存配置，**不要重启**
+   - Step D: 先用 `openclaw test feishu` 测试连通性
+   - Step E: 测试通过后再 `openclaw restart`
+
+**教训**：
+> ⚠️ **Clawbi 不应自行重启 Gateway。** Gateway 重启属于 `require_approval` 级别操作，
+> 必须经过人工确认。已在安全配置中将 `gateway_restart` 加入 require_approval 列表。
+
+---
+
 **Document Owner**: CEO
 **Created**: 2026-02-10
-**Version**: v0.1 (Draft)
+**Version**: v0.2 (Updated 2026-02-11 — 增加故障记录)
 
 > *"给 Clawbi 一个邮箱，不只是技术配置。*
 > *是在告诉团队：我们认真地把 AI 当作同事。"*
