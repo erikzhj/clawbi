@@ -135,35 +135,42 @@ OpenClaw 社区（GitHub Discussions、X/Twitter、Substack）的部署经验表
 
 **身份透明**：虽然是员工席位，Clawbi 的显示名和个人简介应明确标注为 AI 员工（如 "Clawbi 🦀 | AI Employee #001"），保持 AI 身份透明。
 
-**飞书技术接入**（通过飞书开放平台自建应用，不是个人访问令牌）：
+**飞书技术接入 — 员工席位模式**：
 
-> ⚠️ 飞书没有 GitHub 那样的"个人访问令牌"。飞书的认证体系基于**应用（App）**，
-> 通过 App ID + App Secret 获取 access token。
+> ⚠️ 飞书没有 GitHub 那样的"个人访问令牌"（Personal Access Token）。
+> Clawbi 采用**员工席位**模式接入，权限通过飞书管理后台管理，跟管理真人员工一样。
+
+**员工席位模式的优势**：
+- **权限管理最简单**：管理员在飞书后台直接操作，不需要配置 API Scopes
+- **文档共享**：直接把文档/表格共享给 Clawbi，跟共享给同事一样
+- **群组管理**：管理员直接拉 Clawbi 进群，不需要 API 授权
+- **日历共享**：共享日历给 Clawbi 员工账号即可
+- **审批流**：可以直接把 Clawbi 加为审批节点
 
 **Setup 步骤**：
-1. 登录 [飞书开放平台](https://open.feishu.cn)（需管理员或有开发权限的账号）
-2. 创建**自建应用**（企业自建），命名为 "Clawbi"
-3. 在"应用能力"中启用 **机器人（Bot）**
-4. 在"事件订阅"中选择 **WebSocket 模式**（OpenClaw 原生支持，无需公网 webhook URL）
-5. 在"权限管理"中申请以下权限（Scopes）：
 
-| 权限 | 用途 |
-|------|------|
-| `im:message` | 接收和发送消息 |
-| `im:message:send_as_bot` | 以机器人身份发送消息 |
-| `im:chat` | 读取群组信息 |
-| `im:chat:readonly` | 读取会话列表 |
-| `contact:user.base:readonly` | 读取通讯录基本信息 |
-| `calendar:calendar:readonly` | 读取日历（可选，按需） |
+*Step 1: 员工账号配置（飞书管理后台）*
+1. ~~开通 Clawbi 员工席位~~ ✅ `clawbi@cyberflo.ai`
+2. 设置显示名 "Clawbi 🦀 | AI Employee #001"、头像、个人简介标注 AI 身份
+3. 管理员将 Clawbi 拉入相关群组
+4. 共享需要的文档/表格/日历给 Clawbi 账号
 
-6. 创建**应用版本**并提交发布 → 让飞书管理员审批上线
-7. 记录 **App ID** 和 **App Secret**（在"凭证与基础信息"页面）
-8. 在 OpenClaw 中配置飞书集成：填入 App ID + App Secret
-9. 测试：在飞书中找到 Clawbi 机器人，发消息验证连通
+*Step 2: OpenClaw 技术连接（飞书开放平台）*
 
-> **员工席位 vs 机器人的关系**：Clawbi 在飞书通讯录中以员工席位存在（`clawbi@cyberflo.ai`），
-> 但技术连接通过自建应用的机器人能力实现。两者共存：员工席位提供"同事"身份，
-> 自建应用提供 API 和 WebSocket 连接能力。
+> 员工席位提供身份和权限，但 OpenClaw 仍需一个自建应用作为**技术桥梁**来建立 WebSocket 连接。
+> 这个应用只是连接通道，实际权限由员工席位决定。
+
+5. 登录 [飞书开放平台](https://open.feishu.cn)
+6. 创建**自建应用**（企业自建），命名为 "Clawbi Bridge"
+7. 启用**机器人**能力 + **WebSocket** 事件订阅
+8. 申请最小 API 权限（仅用于 WebSocket 消息收发）
+9. 提交发布 → 管理员审批上线
+10. 记录 **App ID** + **App Secret** → 存入 1Password "Shared with Clawbi"
+11. 在 OpenClaw 中配置飞书集成：填入 App ID + App Secret
+12. 测试：在飞书中给 Clawbi 发消息，验证 OpenClaw 连通
+
+> **核心理念**：自建应用只是"电话线"，Clawbi 的身份和权限由员工席位决定。
+> 日常管理完全在飞书管理后台完成 — 加群、共享文档、调整权限，跟管理真人员工一模一样。
 
 **飞书 vs Slack 的选择**：
 - 如果团队主要用 Slack → Slack 为主，飞书为辅
@@ -309,13 +316,13 @@ audit:
 ### Phase 2: 扩展集成（Week 2-3）
 
 - [x] 飞书员工席位已开通：`clawbi@cyberflo.ai`（主）/ `clawbi@hooraycommerce.com`（别名）
-- [ ] 在飞书开放平台（open.feishu.cn）创建自建应用 "Clawbi"
-- [ ] 启用机器人能力 + WebSocket 事件订阅
-- [ ] 配置权限：`im:message`, `im:chat`, `contact:user.base:readonly` 等
-- [ ] 提交发布，管理员审批上线
+- [ ] 设置飞书显示名 "Clawbi 🦀 | AI Employee #001" 和头像
+- [ ] 管理员将 Clawbi 拉入相关群组、共享文档/日历
+- [ ] 在飞书开放平台创建自建应用 "Clawbi Bridge"（技术桥梁，仅用于 WebSocket 连接）
+- [ ] 启用机器人能力 + WebSocket 事件订阅 → 发布上线
 - [ ] 记录 App ID + App Secret 到 1Password "Shared with Clawbi" 保险箱
 - [ ] 在 OpenClaw 中配置飞书集成（App ID + App Secret）
-- [ ] 设置飞书显示名 "Clawbi 🦀 | AI Employee #001" 和头像
+- [ ] 测试：飞书 DM → Clawbi 响应
 - [ ] 创建 GitHub Machine User 账号
 - [ ] 配置 Docker sandbox
 - [ ] 安全自测：尝试让 Clawbi 做不该做的事，确认被拒绝
